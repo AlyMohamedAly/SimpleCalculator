@@ -65,7 +65,15 @@ public class MainActivity extends AppCompatActivity {
         Clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Results.setText("");
+            }
+        });
 
+        Backspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ResStr = Results.getText().toString();
+                Results.setText(ResStr.substring(0,ResStr.length()-1));
             }
         });
 
@@ -78,3 +86,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
