@@ -51,11 +51,19 @@ public class MainActivity extends AppCompatActivity {
         Numbers[8] = findViewById(R.id.Btn8);
         Numbers[9] = findViewById(R.id.Btn9);
 
+        for (int i = 0; i < 10; i++) {
+            Numbers[i].setOnClickListener(NumListen);
+        }
+
         Operations[0] = findViewById(R.id.BtnPlus);
         Operations[1] = findViewById(R.id.BtnMinus);
         Operations[2] = findViewById(R.id.BtnTimes);
         Operations[3] = findViewById(R.id.BtnDivide);
         Operations[4] = findViewById(R.id.BtnRaminder);
+
+        for (int i = 0; i < 5; i++) {
+            Operations[i].setOnClickListener(OpListen);
+        }
 
         Clear = findViewById(R.id.BtnClear);
         Equal = findViewById(R.id.BtnEqual);
@@ -69,6 +77,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Equal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ResStr = Results.getText().toString();
+                for (int i = 0; i < ResStr.length(); i++) {
+                    //Equal here
+                }
+            }
+        });
+
         Backspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,29 +94,5 @@ public class MainActivity extends AppCompatActivity {
                 Results.setText(ResStr.substring(0,ResStr.length()-1));
             }
         });
-
-        for (int i = 0; i < 10; i++) {
-            Numbers[i].setOnClickListener(NumListen);
-        }
-
-        for (int i = 0; i < 5; i++) {
-            Operations[i].setOnClickListener(OpListen);
-        }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
