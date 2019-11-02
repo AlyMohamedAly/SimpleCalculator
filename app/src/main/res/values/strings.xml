@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">MyCalc</string>
+    <string name="Allowed_Digits">0123456789.</string>
+    <string name="BackSpace">⌫</string>
+    <string name="Number1">1</string>
+    <string name="Number2">2</string>
+    <string name="Number3">3</string>
+    <string name="Number4">4</string>
+    <string name="Number5">5</string>
+    <string name="Number6">6</string>
+    <string name="Number7">7</string>
+    <string name="Number8">8</string>
+    <string name="Number9">9</string>
+    <string name="Number0">0</string>
+    <string name="Dot">.</string>
+    <string name="PlusMinus">+/-</string>
+    <string name="Plus">+</string>
+    <string name="Minus">-</string>
+    <string name="Times">x</string>
+    <string name="Divide">÷</string>
+    <string name="Clear">C</string>
+    <string name="Equal">=</string>
+    <string name="Remainder">%</string>
+</resources>
