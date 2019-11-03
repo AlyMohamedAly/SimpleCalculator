@@ -7,7 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,16 +39,46 @@ public class MainActivity extends AppCompatActivity {
         throw new RuntimeException("The program should not be here");
     }
 
+    public void ClearAll(){
+        Results.setText("");
+        Results2.setText("");
+        OperationLocation.clear();
+    }
+
 
     View.OnClickListener NumListen = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button TempBTN = (Button)v;
             String TempStr = TempBTN.getText().toString();
-            if (Results.getText().toString().equals("0")) {
-                Results.setText(TempStr);
+            String ResStr = Results.getText().toString();
+            int sz = ResStr.length();
+            int OpLoc = -1;
+
+            if(OperationLocation.size() == 0){
+                if (ResStr.equals("0"))
+                    Results.setText(TempStr);
+                else
+                    Results.append(TempStr);
             }else{
-                Results.append(TempStr);
+                Log.d("msgs", "onClick: Here");
+                for (int i = sz-1; i > 0 ; i--) {
+                    if (OperationLocation.get(i) != null){
+                        OpLoc = i;
+                        break;
+                    }
+                }
+                Log.d("msgs", "OPLOC: " + OpLoc);
+
+                if(OperationLocation.get(sz-1) == null) {
+                    if (ResStr.substring(OpLoc+1).equals("0")){
+                        Results.setText(ResStr.substring(0,sz - 1) + TempStr);
+                    }else{
+                        Results.append(TempStr);
+                    }
+                }else{
+                    Results.append(TempStr);
+                }
             }
         }
     };
@@ -71,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        final DecimalFormat df = new DecimalFormat("#.###");
+        df.setRoundingMode(RoundingMode.CEILING);
 
         Results = findViewById(R.id.Results);
         Results2 = findViewById(R.id.Results2);
@@ -124,9 +160,7 @@ public class MainActivity extends AppCompatActivity {
         Clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Results.setText("");
-                Results2.setText("");
-                OperationLocation.clear();
+                ClearAll();
             }
         });
 
@@ -149,18 +183,19 @@ public class MainActivity extends AppCompatActivity {
                         if (Locations.length == 1) {
                             Log.d("msg", "onClick: Len1");
                             if (TempStr.length() == Locations[0] + 1) {
-                                Results.setText(Double.parseDouble(TempStr.substring(0, Locations[0])) + "");
+
+                                Results.setText(df.format(Double.parseDouble(TempStr.substring(0, Locations[0]))));
                             }
                             else {
                                 if (TempStr.substring(Locations[0] + 1).equals("0") && OperationLocation.get(Locations[0]) == '÷') {
+                                    Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                                    ClearAll();
+                                }else {
 
-                                    Results.setText("");
-                                    Results2.setText("");
-                                    OperationLocation.clear();
-                                }else
-                                    Results.setText(CalcMe(Double.parseDouble(TempStr.substring(0, Locations[0])),
+                                    Results.setText(df.format(CalcMe(Double.parseDouble(TempStr.substring(0, Locations[0])),
                                             Double.parseDouble(TempStr.substring(Locations[0] + 1)),
-                                            OperationLocation.get(Locations[0])) + "");
+                                            OperationLocation.get(Locations[0]))));
+                                }
                             }
                         } else {
                             boolean Mistake = false;
@@ -170,16 +205,15 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("msg", "In: " + ANS);
                                 if (Double.parseDouble(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && OperationLocation.get(Locations[i-1])== '÷'){
                                     Log.d("msg", "Im hereeee: ");
-                                    Results.setText("");
-                                    Results2.setText("");
-                                    OperationLocation.clear();
+                                    Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                                    ClearAll();
                                     Mistake = true;
                                     break;
                                 }
-                                ANS = CalcMe(ANS,
+                                ANS = Double.parseDouble(df.format(CalcMe(ANS,
                                         Double.parseDouble(TempStr.substring(Locations[i-1] + 1,
                                                 Locations[i])),
-                                        OperationLocation.get(Locations[i-1]));
+                                        OperationLocation.get(Locations[i-1]))));
 
                             }
                             if (!Mistake){
@@ -188,14 +222,13 @@ public class MainActivity extends AppCompatActivity {
                                     Results.setText(ANS+"");
                                 else {
                                     if (TempStr.substring(Locations[Locations.length - 1] + 1).equals("0") && OperationLocation.get(Locations[Locations.length - 1]) == '÷') {
-                                        Results.setText("");
-                                        Results2.setText("");
-                                        OperationLocation.clear();
+                                        Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                                        ClearAll();
                                     }
                                     else {
-                                        Results.setText(CalcMe(ANS,
+                                        Results.setText(df.format(CalcMe(ANS,
                                                 Double.parseDouble(TempStr.substring(Locations[Locations.length - 1] + 1)),
-                                                OperationLocation.get(Locations[Locations.length - 1])) + "");
+                                                OperationLocation.get(Locations[Locations.length - 1]))));
                                         Log.d("msg", "After: " + ANS);
                                     }
                                 }

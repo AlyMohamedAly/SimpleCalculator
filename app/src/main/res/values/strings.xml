@@ -21,4 +21,5 @@
     <string name="Clear">C</string>
     <string name="Equal">=</string>
     <string name="Remainder">%</string>
+    <string name="DivideZero">You can\'t divide by zero</string>
 </resources>
