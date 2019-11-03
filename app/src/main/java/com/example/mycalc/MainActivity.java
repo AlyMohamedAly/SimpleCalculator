@@ -121,11 +121,12 @@ public class MainActivity extends AppCompatActivity {
         Backspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                String ResStr = Results.getText().toString();
-//                if (ResStr.length() > 0)
-//                    Results.setText(ResStr.substring(0,ResStr.length()-1));
-
-                // Implement
+                String ResStr = Results.getText().toString();
+                if (ResStr.length() > 0) {
+                    if (OperationLocation.get(ResStr.length() - 1) != null) 
+                        OperationLocation.remove(ResStr.length() - 1);
+                    Results.setText(ResStr.substring(0, ResStr.length() - 1));
+                }
             }
         });
     }
