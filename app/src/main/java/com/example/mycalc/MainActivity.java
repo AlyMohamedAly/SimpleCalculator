@@ -3,6 +3,7 @@ package com.example.mycalc;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,6 +19,23 @@ public class MainActivity extends AppCompatActivity {
     Button Clear, Equal, Backspace, Negative, Dot;
 
     HashMap<Integer, Character> OperationLocation = new HashMap<>();
+
+    public static double CalcMe(double Num1, double Num2, char OP){
+        switch (OP){
+            case '+':
+                return Num1 + Num2;
+            case '-':
+                return Num1 - Num2;
+            case '÷':
+                return Num1 / Num2;
+            case 'x':
+                return Num1 * Num2;
+            case '%':
+                return Num1 % Num2;
+        }
+        throw new RuntimeException("The program should not be here");
+    }
+
 
     View.OnClickListener NumListen = new View.OnClickListener() {
         @Override
@@ -107,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Results.setText("");
+                Results2.setText("");
                 OperationLocation.clear();
             }
         });
@@ -114,7 +133,79 @@ public class MainActivity extends AppCompatActivity {
         Equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Implement
+                String TempStr = Results.getText().toString();
+                if (TempStr.length() == 0)
+                    Results.setText("");
+                else {
+                    if (!OperationLocation.isEmpty()){
+
+                        int[] Locations = new int[OperationLocation.size()];
+                        int index = 0;
+                        for (Integer i : OperationLocation.keySet()) {
+                            Locations[index] = i;
+                            index++;
+                        }
+
+                        if (Locations.length == 1) {
+                            Log.d("msg", "onClick: Len1");
+                            if (TempStr.length() == Locations[0] + 1) {
+                                Results.setText(Double.parseDouble(TempStr.substring(0, Locations[0])) + "");
+                            }
+                            else {
+                                if (TempStr.substring(Locations[0] + 1).equals("0") && OperationLocation.get(Locations[0]) == '÷') {
+
+                                    Results.setText("");
+                                    Results2.setText("");
+                                    OperationLocation.clear();
+                                }else
+                                    Results.setText(CalcMe(Double.parseDouble(TempStr.substring(0, Locations[0])),
+                                            Double.parseDouble(TempStr.substring(Locations[0] + 1)),
+                                            OperationLocation.get(Locations[0])) + "");
+                            }
+                        } else {
+                            boolean Mistake = false;
+                            double ANS = Double.parseDouble(TempStr.substring(0, Locations[0]));
+                            Log.d("msg", "Before: " + ANS);
+                            for (int i = 1; i < Locations.length; i++) {
+                                Log.d("msg", "In: " + ANS);
+                                if (Double.parseDouble(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && OperationLocation.get(Locations[i-1])== '÷'){
+                                    Log.d("msg", "Im hereeee: ");
+                                    Results.setText("");
+                                    Results2.setText("");
+                                    OperationLocation.clear();
+                                    Mistake = true;
+                                    break;
+                                }
+                                ANS = CalcMe(ANS,
+                                        Double.parseDouble(TempStr.substring(Locations[i-1] + 1,
+                                                Locations[i])),
+                                        OperationLocation.get(Locations[i-1]));
+
+                            }
+                            if (!Mistake){
+                                Log.d("msg", "Out: " + ANS);
+                                if (TempStr.substring(Locations[Locations.length-1] + 1).length() == 0)
+                                    Results.setText(ANS+"");
+                                else {
+                                    if (TempStr.substring(Locations[Locations.length - 1] + 1).equals("0") && OperationLocation.get(Locations[Locations.length - 1]) == '÷') {
+                                        Results.setText("");
+                                        Results2.setText("");
+                                        OperationLocation.clear();
+                                    }
+                                    else {
+                                        Results.setText(CalcMe(ANS,
+                                                Double.parseDouble(TempStr.substring(Locations[Locations.length - 1] + 1)),
+                                                OperationLocation.get(Locations[Locations.length - 1])) + "");
+                                        Log.d("msg", "After: " + ANS);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                OperationLocation.clear();
+                //handle Infinity
+                //handle empty
             }
         });
 
@@ -123,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String ResStr = Results.getText().toString();
                 if (ResStr.length() > 0) {
-                    if (OperationLocation.get(ResStr.length() - 1) != null) 
+                    if (OperationLocation.get(ResStr.length() - 1) != null)
                         OperationLocation.remove(ResStr.length() - 1);
                     Results.setText(ResStr.substring(0, ResStr.length() - 1));
                 }
