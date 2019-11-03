@@ -7,19 +7,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 public class MainActivity extends AppCompatActivity {
-    TextView Results;
+    TextView Results, Results2;
 
-    Button[] Numbers;
-    Button[] Operations;
+    Button[] Numbers = new Button[10];
+    Button[] Operations = new Button[5];
 
-    Button Clear, Equal, Backspace, Negative;
+    Button Clear, Equal, Backspace, Negative, Dot;
+
+    HashMap<Integer, Character> OperationLocation = new HashMap<>();
 
     View.OnClickListener NumListen = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button TempBTN = (Button)v;
-            Results.append(TempBTN.getText().toString());
+            String TempStr = TempBTN.getText().toString();
+            if (Results.getText().toString().equals("0")) {
+                Results.setText(TempStr);
+            }else{
+                Results.append(TempStr);
+            }
         }
     };
 
@@ -27,7 +36,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             Button TempBTN = (Button)v;
-            Results.append(TempBTN.getText().toString());
+            String ResStr = Results.getText().toString();
+            int sz = ResStr.length();
+            if (sz != 0){
+                if(OperationLocation.get(sz-1) == null) {
+                    OperationLocation.put(sz, TempBTN.getText().charAt(0));
+                    Results.append(TempBTN.getText().toString());
+                }
+            }
         }
     };
 
@@ -39,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Results = findViewById(R.id.Results);
+        Results2 = findViewById(R.id.Results2);
 
         Numbers[0] = findViewById(R.id.Btn0);
         Numbers[1] = findViewById(R.id.Btn1);
@@ -69,29 +86,46 @@ public class MainActivity extends AppCompatActivity {
         Equal = findViewById(R.id.BtnEqual);
         Backspace = findViewById(R.id.BtnDelete);
         Negative = findViewById(R.id.BtnNegative);
+        Dot = findViewById(R.id.BtnDot);
+
+        Dot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String temp = Results.getText().toString();
+                boolean Flag = false;
+                int StopHere = temp.length();
+                for (int i = StopHere - 1; (i > 0) && (OperationLocation.get(i) == null) ; i--) {
+                    if(temp.charAt(i) == '.')
+                        Flag = true;
+                }
+                if (!Flag)
+                    Results.append(".");
+            }
+        });
 
         Clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Results.setText("");
+                OperationLocation.clear();
             }
         });
 
         Equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String ResStr = Results.getText().toString();
-                for (int i = 0; i < ResStr.length(); i++) {
-                    //Equal here
-                }
+                // Implement
             }
         });
 
         Backspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String ResStr = Results.getText().toString();
-                Results.setText(ResStr.substring(0,ResStr.length()-1));
+//                String ResStr = Results.getText().toString();
+//                if (ResStr.length() > 0)
+//                    Results.setText(ResStr.substring(0,ResStr.length()-1));
+
+                // Implement
             }
         });
     }
