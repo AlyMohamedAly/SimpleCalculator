@@ -22,4 +22,5 @@
     <string name="Equal">=</string>
     <string name="Remainder">%</string>
     <string name="DivideZero">You can\'t divide by zero</string>
+    <string name="Invalid">Invalid Expression</string>
 </resources>

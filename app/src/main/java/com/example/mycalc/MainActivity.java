@@ -45,6 +45,16 @@ public class MainActivity extends AppCompatActivity {
         OperationLocation.clear();
     }
 
+    public double ParseMe(String s){
+        double ANS = 0;
+        try{
+            ANS = Double.parseDouble(s);
+        }catch (NumberFormatException Ex){
+            Toast.makeText(getBaseContext(), getString(R.string.Invalid), Toast.LENGTH_SHORT).show();
+        }
+        return ANS;
+    }
+
 
     View.OnClickListener NumListen = new View.OnClickListener() {
         @Override
@@ -157,6 +167,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Negative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ResStr = Results.getText().toString();
+                int sz = ResStr.length();
+
+                if(sz == 0 || OperationLocation.get(sz - 1) != null){
+                    Results.append("-");
+                }
+            }
+        });
+
         Clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,6 +194,9 @@ public class MainActivity extends AppCompatActivity {
                     Results.setText("");
                 else {
                     if (!OperationLocation.isEmpty()){
+                        Log.d("msg", "onClick: isEmpty " + OperationLocation.isEmpty());
+                        Log.d("msg", "onClick: Operation[0]: " + OperationLocation.get(0));
+                        Log.d("msg", "onClick: Operation[1]: " + OperationLocation.get(1));
 
                         int[] Locations = new int[OperationLocation.size()];
                         int index = 0;
@@ -183,35 +208,41 @@ public class MainActivity extends AppCompatActivity {
                         if (Locations.length == 1) {
                             Log.d("msg", "onClick: Len1");
                             if (TempStr.length() == Locations[0] + 1) {
-
-                                Results.setText(df.format(Double.parseDouble(TempStr.substring(0, Locations[0]))));
-                            }
-                            else {
+                                Log.d("msg", "onClick: Len2");
+                                Results.setText(df.format(ParseMe(TempStr.substring(0, Locations[0]))));
+                            } else {
+                                Log.d("msg", "elssss: ");
                                 if (TempStr.substring(Locations[0] + 1).equals("0") && OperationLocation.get(Locations[0]) == '÷') {
+                                    Log.d("msg", "else22: ");
                                     Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
                                     ClearAll();
                                 }else {
-
-                                    Results.setText(df.format(CalcMe(Double.parseDouble(TempStr.substring(0, Locations[0])),
-                                            Double.parseDouble(TempStr.substring(Locations[0] + 1)),
-                                            OperationLocation.get(Locations[0]))));
+                                    Log.d("msg", "else4444: ");
+                                    double temp1 = ParseMe(TempStr.substring(0, Locations[0]));
+                                    double temp2 = ParseMe(TempStr.substring(Locations[0] + 1));
+                                    Log.d("msg", "onClick: Locations[0]: " + Locations[0]);
+                                    Log.d("msg", "onClick: Operation[0]: " + OperationLocation.get(0));
+                                    Log.d("msg", "onClick: Operation[1]: " + OperationLocation.get(1));
+                                    char Op1 = OperationLocation.get(Locations[0]);
+                                    double temp3 = CalcMe(temp1,temp2,Op1);
+                                    Results.setText(df.format(temp3));
                                 }
                             }
                         } else {
                             boolean Mistake = false;
-                            double ANS = Double.parseDouble(TempStr.substring(0, Locations[0]));
+                            double ANS = ParseMe(TempStr.substring(0, Locations[0]));
                             Log.d("msg", "Before: " + ANS);
                             for (int i = 1; i < Locations.length; i++) {
                                 Log.d("msg", "In: " + ANS);
-                                if (Double.parseDouble(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && OperationLocation.get(Locations[i-1])== '÷'){
+                                if (ParseMe(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && OperationLocation.get(Locations[i-1])== '÷'){
                                     Log.d("msg", "Im hereeee: ");
                                     Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
                                     ClearAll();
                                     Mistake = true;
                                     break;
                                 }
-                                ANS = Double.parseDouble(df.format(CalcMe(ANS,
-                                        Double.parseDouble(TempStr.substring(Locations[i-1] + 1,
+                                ANS = ParseMe(df.format(CalcMe(ANS,
+                                        ParseMe(TempStr.substring(Locations[i-1] + 1,
                                                 Locations[i])),
                                         OperationLocation.get(Locations[i-1]))));
 
@@ -227,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     else {
                                         Results.setText(df.format(CalcMe(ANS,
-                                                Double.parseDouble(TempStr.substring(Locations[Locations.length - 1] + 1)),
+                                                ParseMe(TempStr.substring(Locations[Locations.length - 1] + 1)),
                                                 OperationLocation.get(Locations[Locations.length - 1]))));
                                         Log.d("msg", "After: " + ANS);
                                     }
@@ -237,8 +268,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 OperationLocation.clear();
-                //handle Infinity
-                //handle empty
             }
         });
 
