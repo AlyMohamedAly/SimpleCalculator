@@ -24,4 +24,5 @@
     <string name="DivideZero">You can\'t divide by zero</string>
     <string name="Invalid">Invalid Expression</string>
     <string name="MaxLenChars">20</string>
+    <string name="Exit">Press back again to exit</string>
 </resources>

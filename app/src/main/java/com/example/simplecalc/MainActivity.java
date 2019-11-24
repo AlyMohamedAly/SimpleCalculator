@@ -23,6 +23,21 @@ public class MainActivity extends AppCompatActivity {
     HashMap<Integer, Character> OperationLocation = new HashMap<>();
 
     public final int maxSizeLen = 20;   //Change later
+    private static final int TIME_INTERVAL = 2000; // # milliseconds, desired time passed between two back presses.
+    private long mBackPressed;
+
+    @Override
+    public void onBackPressed(){
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis())
+        {
+            super.onBackPressed();
+            return;
+        } else {
+            Toast.makeText(getBaseContext(), getString(R.string.Exit), Toast.LENGTH_SHORT).show();
+        }
+
+        mBackPressed = System.currentTimeMillis();
+    }
 
     public static double CalcMe(double Num1, double Num2, char OP){
         switch (OP){
