@@ -1,4 +1,4 @@
-package com.example.mycalc;
+package com.example.simplecalc;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     Button Clear, Equal, Backspace, Negative, Dot;
 
     HashMap<Integer, Character> OperationLocation = new HashMap<>();
+
+    public final int maxSizeLen = 20;   //Change later
 
     public static double CalcMe(double Num1, double Num2, char OP){
         switch (OP){
@@ -99,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
             Button TempBTN = (Button)v;
             String ResStr = Results.getText().toString();
             int sz = ResStr.length();
-            if (sz != 0){
+
+            if (sz != 0 && sz != maxSizeLen){
                 if(OperationLocation.get(sz-1) == null) {
                     OperationLocation.put(sz, TempBTN.getText().charAt(0));
                     Results.append(TempBTN.getText().toString());
@@ -156,6 +159,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String temp = Results.getText().toString();
+                if (temp.length() == 0){
+                    Results.append("0");
+                }
                 boolean Flag = false;
                 int StopHere = temp.length();
                 for (int i = StopHere - 1; (i > 0) && (OperationLocation.get(i) == null) ; i--) {
@@ -212,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                                 Results.setText(df.format(ParseMe(TempStr.substring(0, Locations[0]))));
                             } else {
                                 Log.d("msg", "elssss: ");
-                                if (TempStr.substring(Locations[0] + 1).equals("0") && OperationLocation.get(Locations[0]) == '÷') {
+                                if (TempStr.substring(Locations[0] + 1).equals("0") && (OperationLocation.get(Locations[0]) == '÷' || OperationLocation.get(Locations[0]) == '%')) {
                                     Log.d("msg", "else22: ");
                                     Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
                                     ClearAll();
@@ -234,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("msg", "Before: " + ANS);
                             for (int i = 1; i < Locations.length; i++) {
                                 Log.d("msg", "In: " + ANS);
-                                if (ParseMe(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && OperationLocation.get(Locations[i-1])== '÷'){
+                                if (ParseMe(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && (OperationLocation.get(Locations[i-1]) == '÷' || OperationLocation.get(Locations[i-1]) == '%')){
                                     Log.d("msg", "Im hereeee: ");
                                     Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
                                     ClearAll();
@@ -252,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (TempStr.substring(Locations[Locations.length-1] + 1).length() == 0)
                                     Results.setText(ANS+"");
                                 else {
-                                    if (TempStr.substring(Locations[Locations.length - 1] + 1).equals("0") && OperationLocation.get(Locations[Locations.length - 1]) == '÷') {
+                                    if (TempStr.substring(Locations[Locations.length - 1] + 1).equals("0") && (OperationLocation.get(Locations[Locations.length - 1]) == '÷' || OperationLocation.get(Locations[Locations.length - 1]) == '%')) {
                                         Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
                                         ClearAll();
                                     }

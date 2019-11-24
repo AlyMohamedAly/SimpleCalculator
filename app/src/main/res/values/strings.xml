@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyCalc</string>
+    <string name="app_name">SimpleCalc</string>
     <string name="Allowed_Digits">0123456789.</string>
     <string name="BackSpace">⌫</string>
     <string name="Number1">1</string>
@@ -23,4 +23,5 @@
     <string name="Remainder">%</string>
     <string name="DivideZero">You can\'t divide by zero</string>
     <string name="Invalid">Invalid Expression</string>
+    <string name="MaxLenChars">20</string>
 </resources>
