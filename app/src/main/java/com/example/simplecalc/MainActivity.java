@@ -3,7 +3,6 @@ package com.example.simplecalc;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -41,6 +40,79 @@ public class MainActivity extends AppCompatActivity {
         throw new RuntimeException("The program should not be here");
     }
 
+
+    public void SemiCalculate(){
+        final DecimalFormat df = new DecimalFormat("#.###");
+        df.setRoundingMode(RoundingMode.CEILING);
+        String TempStr = Results.getText().toString();
+        String TempAns = "";
+        if (TempStr.length() == 0) {
+            Results.setText("");
+            Results2.setText("");
+        }
+        else {
+            if (!OperationLocation.isEmpty()){
+                int[] Locations = new int[OperationLocation.size()];
+                int index = 0;
+                for (Integer i : OperationLocation.keySet()) {
+                    Locations[index] = i;
+                    index++;
+                }
+
+                if (Locations.length == 1) {
+                    if (TempStr.length() == Locations[0] + 1) {
+                        TempAns = df.format(ParseMe(TempStr.substring(0, Locations[0])));
+                        Results2.setText(TempAns);
+                    } else {
+                        if (TempStr.substring(Locations[0] + 1).equals("0") && (OperationLocation.get(Locations[0]) == '÷' || OperationLocation.get(Locations[0]) == '%')) {
+                                Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                                //ClearAll();
+                        }else {
+                            double temp1 = ParseMe(TempStr.substring(0, Locations[0]));
+                            double temp2 = ParseMe(TempStr.substring(Locations[0] + 1));
+                            char Op1 = OperationLocation.get(Locations[0]);
+                            double temp3 = CalcMe(temp1,temp2,Op1);
+                            Results2.setText(df.format(temp3));
+                        }
+                    }
+                } else {
+                    boolean Mistake = false;
+                    double ANS = ParseMe(TempStr.substring(0, Locations[0]));
+                    for (int i = 1; i < Locations.length; i++) {
+                        if (ParseMe(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && (OperationLocation.get(Locations[i-1]) == '÷' || OperationLocation.get(Locations[i-1]) == '%')){
+                            Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                            //ClearAll();
+                            Mistake = true;
+                            break;
+                        }
+                        ANS = ParseMe(df.format(CalcMe(ANS,
+                                ParseMe(TempStr.substring(Locations[i-1] + 1,
+                                        Locations[i])),
+                                OperationLocation.get(Locations[i-1]))));
+
+                    }
+                    if (!Mistake){
+                        if (TempStr.substring(Locations[Locations.length-1] + 1).length() == 0)
+                            Results2.setText(ANS+"");
+                        else {
+                            if (TempStr.substring(Locations[Locations.length - 1] + 1).equals("0") && (OperationLocation.get(Locations[Locations.length - 1]) == '÷' || OperationLocation.get(Locations[Locations.length - 1]) == '%')) {
+                                Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                                //ClearAll();
+                            }
+                            else {
+                                Results2.setText(df.format(CalcMe(ANS,
+                                        ParseMe(TempStr.substring(Locations[Locations.length - 1] + 1)),
+                                        OperationLocation.get(Locations[Locations.length - 1]))));
+                            }
+                        }
+                    }
+                }
+            }else{
+                Results2.setText(df.format(ParseMe(Results.getText().toString())));
+            }
+        }
+    }
+
     public void ClearAll(){
         Results.setText("");
         Results2.setText("");
@@ -49,6 +121,11 @@ public class MainActivity extends AppCompatActivity {
 
     public double ParseMe(String s){
         double ANS = 0;
+        int sz = s.length();
+        if (sz == 0)
+            return ANS;
+        if (s.charAt(sz-1) == '.')
+            s = s.substring(0,sz-1);
         try{
             ANS = Double.parseDouble(s);
         }catch (NumberFormatException Ex){
@@ -73,14 +150,12 @@ public class MainActivity extends AppCompatActivity {
                 else
                     Results.append(TempStr);
             }else{
-                Log.d("msgs", "onClick: Here");
                 for (int i = sz-1; i > 0 ; i--) {
                     if (OperationLocation.get(i) != null){
                         OpLoc = i;
                         break;
                     }
                 }
-                Log.d("msgs", "OPLOC: " + OpLoc);
 
                 if(OperationLocation.get(sz-1) == null) {
                     if (ResStr.substring(OpLoc+1).equals("0")){
@@ -92,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     Results.append(TempStr);
                 }
             }
+            SemiCalculate();
         }
     };
 
@@ -182,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
                 if(sz == 0 || OperationLocation.get(sz - 1) != null){
                     Results.append("-");
                 }
+                SemiCalculate();
             }
         });
 
@@ -195,84 +272,7 @@ public class MainActivity extends AppCompatActivity {
         Equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String TempStr = Results.getText().toString();
-                if (TempStr.length() == 0)
-                    Results.setText("");
-                else {
-                    if (!OperationLocation.isEmpty()){
-                        Log.d("msg", "onClick: isEmpty " + OperationLocation.isEmpty());
-                        Log.d("msg", "onClick: Operation[0]: " + OperationLocation.get(0));
-                        Log.d("msg", "onClick: Operation[1]: " + OperationLocation.get(1));
-
-                        int[] Locations = new int[OperationLocation.size()];
-                        int index = 0;
-                        for (Integer i : OperationLocation.keySet()) {
-                            Locations[index] = i;
-                            index++;
-                        }
-
-                        if (Locations.length == 1) {
-                            Log.d("msg", "onClick: Len1");
-                            if (TempStr.length() == Locations[0] + 1) {
-                                Log.d("msg", "onClick: Len2");
-                                Results.setText(df.format(ParseMe(TempStr.substring(0, Locations[0]))));
-                            } else {
-                                Log.d("msg", "elssss: ");
-                                if (TempStr.substring(Locations[0] + 1).equals("0") && (OperationLocation.get(Locations[0]) == '÷' || OperationLocation.get(Locations[0]) == '%')) {
-                                    Log.d("msg", "else22: ");
-                                    Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
-                                    ClearAll();
-                                }else {
-                                    Log.d("msg", "else4444: ");
-                                    double temp1 = ParseMe(TempStr.substring(0, Locations[0]));
-                                    double temp2 = ParseMe(TempStr.substring(Locations[0] + 1));
-                                    Log.d("msg", "onClick: Locations[0]: " + Locations[0]);
-                                    Log.d("msg", "onClick: Operation[0]: " + OperationLocation.get(0));
-                                    Log.d("msg", "onClick: Operation[1]: " + OperationLocation.get(1));
-                                    char Op1 = OperationLocation.get(Locations[0]);
-                                    double temp3 = CalcMe(temp1,temp2,Op1);
-                                    Results.setText(df.format(temp3));
-                                }
-                            }
-                        } else {
-                            boolean Mistake = false;
-                            double ANS = ParseMe(TempStr.substring(0, Locations[0]));
-                            Log.d("msg", "Before: " + ANS);
-                            for (int i = 1; i < Locations.length; i++) {
-                                Log.d("msg", "In: " + ANS);
-                                if (ParseMe(TempStr.substring(Locations[i-1] + 1, Locations[i])) == 0 && (OperationLocation.get(Locations[i-1]) == '÷' || OperationLocation.get(Locations[i-1]) == '%')){
-                                    Log.d("msg", "Im hereeee: ");
-                                    Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
-                                    ClearAll();
-                                    Mistake = true;
-                                    break;
-                                }
-                                ANS = ParseMe(df.format(CalcMe(ANS,
-                                        ParseMe(TempStr.substring(Locations[i-1] + 1,
-                                                Locations[i])),
-                                        OperationLocation.get(Locations[i-1]))));
-
-                            }
-                            if (!Mistake){
-                                Log.d("msg", "Out: " + ANS);
-                                if (TempStr.substring(Locations[Locations.length-1] + 1).length() == 0)
-                                    Results.setText(ANS+"");
-                                else {
-                                    if (TempStr.substring(Locations[Locations.length - 1] + 1).equals("0") && (OperationLocation.get(Locations[Locations.length - 1]) == '÷' || OperationLocation.get(Locations[Locations.length - 1]) == '%')) {
-                                        Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
-                                        ClearAll();
-                                    }
-                                    else {
-                                        Results.setText(df.format(CalcMe(ANS,
-                                                ParseMe(TempStr.substring(Locations[Locations.length - 1] + 1)),
-                                                OperationLocation.get(Locations[Locations.length - 1]))));
-                                        Log.d("msg", "After: " + ANS);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                Results.setText(df.format(ParseMe(Results2.getText().toString())));
                 OperationLocation.clear();
             }
         });
@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
                         OperationLocation.remove(ResStr.length() - 1);
                     Results.setText(ResStr.substring(0, ResStr.length() - 1));
                 }
+                SemiCalculate();
             }
         });
     }

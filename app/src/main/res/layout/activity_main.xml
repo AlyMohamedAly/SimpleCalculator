@@ -33,8 +33,9 @@
             android:layout_height="wrap_content"
             android:gravity="end"
             android:maxLength="20"
-            android:textColor="@color/Black"
-            android:textSize="24sp" />
+            android:textColor="@color/Grey"
+            android:textSize="24sp"
+            tools:text="@string/Number0" />
 
     </LinearLayout>
 
