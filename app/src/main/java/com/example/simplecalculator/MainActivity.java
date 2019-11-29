@@ -1,4 +1,4 @@
-package com.example.simplecalc;
+package com.example.simplecalculator;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity {
                         Results2.setText(TempAns);
                     } else {
                         if (TempStr.substring(Locations[0] + 1).equals("0") && (OperationLocation.get(Locations[0]) == '÷' || OperationLocation.get(Locations[0]) == '%')) {
-                                Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
-                                //ClearAll();
+                            Toast.makeText(getBaseContext(), getString(R.string.DivideZero), Toast.LENGTH_SHORT).show();
+                            //ClearAll();
                         }else {
                             double temp1 = ParseMe(TempStr.substring(0, Locations[0]));
                             double temp2 = ParseMe(TempStr.substring(Locations[0] + 1));
